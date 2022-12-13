@@ -146,7 +146,7 @@ table_overos<-table('Actual'=dataframe_overos$Actual,
                   'Predicted'= dataframe_overos$Predicted)
 table_overos
 
-#Creation of probability table
+###Creation of probability table
 prop_table_overos<-prop.table(table_overos)
 round(prop_table_overos*100,2)
 
