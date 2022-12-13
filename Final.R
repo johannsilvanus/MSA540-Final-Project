@@ -54,6 +54,9 @@ undersampling<-ovun.sample(output~., data=train, method='under', N = 110)$data
 
 ### Method for oversampling
 
+table(train$output)
+oversamplingos<-ovun.sample(output~., data=train, method='over', N =134)$data
+
 # Logistic Regression
 
 mylogit <- glm(output~., data = train, family = binomial)
@@ -120,6 +123,36 @@ acc_under
 psuedo_under<-1-(under_log$deviance/under_log$null.deviance)
 psuedo_under
 
+###Logistic Regression Oversampling
+
+over_logisticos<- glm(output~.,data=oversamplingos, family='binomial')
+summary(over_logisticos)
+
+###Predicting results
+predict_overos<-predict(over_logisticos, newdata= valid, type='response')
+predict_overos
+
+###Converting them to alive and dead
+predict_over_responseos<-ifelse(predict_overos>=0.5, '1','0')
+
+###Dataframe
+dataframe_overos<- data.frame('Actual'=valid$output,
+                            'Predicted'= predict_over_responseos)
+
+View(dataframe_over)
+
+###Creation of confusion matrix
+table_overos<-table('Actual'=dataframe_overos$Actual,
+                  'Predicted'= dataframe_overos$Predicted)
+table_overos
+
+#Creation of probability table
+prop_table_overos<-prop.table(table_overos)
+round(prop_table_overos*100,2)
+
+acc_overos<-12.64 + 5.49
+acc_overos
+
 # Classification Trees
 model = rpart(output~., data = train, method = 'class')
 
@@ -169,6 +202,32 @@ accuracy_under_class
 confusion_matrix = table(valid$output, predict_classunder)
 confusion_matrix
 
+### Classification Oversample
+
+modelos = rpart(output~., data = oversampling, method = 'class')
+
+rpart.plot(modelos)
+
+predict_testos = predict(modelos, valid, type = "class")
+
+dfos = data.frame("Actual" = valid$output,
+                 "Predicted" = predict_testos)
+View(dfos)
+
+tbos = table("Actual" = df2$Actual,
+            "Predicted" = df2$Predicted)
+tbos
+
+probos = round(prop.table(tb2) * 100, 2)
+probos
+
+accos = 28.57 + 50.00
+accos
+
+confusion_matrixos = table(valid$output, predict_testos)
+confusion_matrixos
+
+
 # Random Forests
 rf = randomForest(output~., data = train, proximity=TRUE) 
 print(rf)
@@ -182,6 +241,14 @@ print(rf_under)
 
 predict_rf_under = predict(rf_under, undersampling)
 confusionMatrix(predict_rf_under, undersampling$output)
+
+### Random Forest Oversample
+
+rfos = randomForest(output~., data = oversampling, proximity=TRUE) 
+print(rfos)
+
+p1os = predict(rfos, oversampling)
+confusionMatrix(p1os, oversampling$output)
 
 # Clustering
 d_dist = daisy(scaled_df, metric = "gower")
@@ -204,6 +271,18 @@ rect.hclust(hc_undersampled, k=8, border="red")
 ## choose k, number of clusters 
 cluster = cutree(hc_undersampled, k= 8)
 
+### Clustering Oversample
+
+### hierarchical clustering
+d_distos = daisy(oversamplingos, metric = "oversampling")
+
+hcos = hclust(d_distos, method = "complete")
+
+### dendrogram 
+plot(hcos, labels=FALSE)
+rect.hclust(hc, k=8, border="red")
+### choose k, number of clusters 
+cluster = cutree(hc, k=8)
 
 # PCA
 pc1 = prcomp(scaled_df[,-14])
@@ -219,6 +298,10 @@ valid2 = scaled_df[-index2,]
 ## Method for Undersampling PCA
 table(train2$output)
 under_pca<-ovun.sample(output~., data=train2, method='under', N = 114)$data
+
+### Method for Oversampling PCA
+
+oversamplingos_pca<-ovun.sample(output~., data=train2, method='over', N =134)$data
 
 # Logistic PCA
 mylogit2 <- glm(output~., data = train2, family = binomial)
@@ -274,6 +357,33 @@ round(prop_table_under_pca*100,2)
 acc_under_pca<-44.51+35.16
 acc_under_pca
 
+### Logistic Regression Oversample PCA
+
+mylogit2os_pca <- glm(output~., data = oversamplingos_pca, family = binomial)
+summary(mylogit2os)
+
+pre3os_pca = predict(mylogit2, newdata = valid2, type = 'response')
+View(pre3os_pca)
+
+LogisticResponse2os_pca = ifelse(pre3os_pca >= 0.5, '1','0')
+
+df3os_pca = data.frame("Actual" = valid2$output,
+                 "Predicted" = LogisticResponse2os_pca)
+View(df3os_pca)
+
+tb3os_pca= table("Actual" = df3os_pca$Actual,
+            "Predicted" = df3os_pca$Predicted)
+tb3os_pca
+
+prob3os_pca = round(prop.table(tb3os_pca) * 100, 2)
+prob3os_pca
+
+acc3os_pca = 32.97 + 47.25
+acc3os_pca
+
+psuedo2os_pca = 1 - (mylogit2os_pca$deviance/mylogit2os_pca$null.deviance)
+psuedo2os_pca
+
 
 # Classification PCA
 model2 = rpart(output~., data = train2, method = 'class')
@@ -323,6 +433,31 @@ accuracy_under_class_pca
 confusion_matrix = table(valid2$output, predict_classunder_pca)
 confusion_matrix
 
+### Classification PCA - Oversample 
+
+odel2os_pca = rpart(output~., data = oversamplingos_pca, method = 'class')
+
+rpart.plot(model2os_pca)
+
+predict_test2os_pca = predict(model, valid2, type = "class")
+
+df4os_pca = data.frame("Actual" = valid2$output,
+                 "Predicted" = predict_test2os_pca)
+View(df4os_pca)
+
+tb4os_pca = table("Actual" = df4os_pca$Actual,
+            "Predicted" = df4os_pca$Predicted)
+tb4os_pca
+
+prob4os_pca = round(prop.table(tb4os_pca) * 100, 2)
+prob4os_pca
+
+acc4os_pca = 28.02 + 52.20
+acc4os_pca
+
+confusion_matrixos_pca = table(valid2$output, predict_test2os_pca)
+confusion_matrixos_pca
+
 
 # Random Forests PCA
 rf2 = randomForest(output~., data = train2, proximity=TRUE) 
@@ -338,6 +473,14 @@ print(rf_under_pca)
 predict_rf_under_pca = predict(rf_under_pca, under_pca)
 confusionMatrix(predict_rf_under_pca, under_pca$output)
 ## Accuracy of (.9682,1)
+
+### Rancom Forest PCA - Oversample 
+
+rf2os_pca = randomForest(output~., data = oversamplingos_pca, proximity=TRUE) 
+print(rf2os_pca)
+
+p2os_pca = predict(rfos, oversamplingos_pca)
+confusionMatrix(p2os_pca, oversamplingos_pca$output)
 
 # Clustering PCA
 d_dist2 = daisy(pca_scaled_df, metric = "gower")
@@ -358,5 +501,16 @@ plot(hc_undersampled_pca, labels=FALSE)
 rect.hclust(hc_undersampled_pca, k=8, border="red")
 ## choose k, number of clusters 
 cluster = cutree(hc_undersampled_pca, k= 8)
+
+### Clustering PCA - Oversampling 
+
+d_dist2os_pca = daisy(oversamplingos_pca, metric = "gower")
+### hierarchical clustering
+hc2os_pca = hclust(d_dist2os_pca, method = "complete")
+### dendrogram 
+plot(hc2os_pca, labels=FALSE)
+rect.hclust(hc2os_pca, k=8, border="red")
+### choose k, number of clusters 
+cluster2os_pca = cutree(hc2, k=8)
 
 rm(list = ls())
