@@ -70,17 +70,17 @@ View(pre)
 LogisticResponse1 = ifelse(pre >= 0.5, '1','0')
 
 df = data.frame("Actual" = valid$output,
-                 "Predicted" = LogisticResponse1)
+                "Predicted" = LogisticResponse1)
 View(df)
 
 tb = table("Actual" = df$Actual,
-            "Predicted" = df$Predicted)
+           "Predicted" = df$Predicted)
 tb
 
 prob = round(prop.table(tb) * 100, 2)
 prob
 
-acc = 35.16 + 48.90
+acc = 31.87 + 48.35
 acc
 
 psuedo1 = 1 - (mylogit$deviance/mylogit$null.deviance)
@@ -123,6 +123,11 @@ acc_under
 psuedo_under<-1-(under_log$deviance/under_log$null.deviance)
 psuedo_under
 
+dataframe_under$Actual = as.factor(dataframe_under$Actual)
+dataframe_under$Predicted = as.factor(dataframe_under$Predicted)
+
+confusionMatrix(dataframe_under$Predicted, dataframe_under$Actual, mode = "everything")
+
 ###Logistic Regression Oversampling
 
 over_logisticos<- glm(output~.,data=oversamplingos, family='binomial')
@@ -137,13 +142,13 @@ predict_over_responseos<-ifelse(predict_overos>=0.5, '1','0')
 
 ###Dataframe
 dataframe_overos<- data.frame('Actual'=valid$output,
-                            'Predicted'= predict_over_responseos)
+                              'Predicted'= predict_over_responseos)
 
 View(dataframe_over)
 
 ###Creation of confusion matrix
 table_overos<-table('Actual'=dataframe_overos$Actual,
-                  'Predicted'= dataframe_overos$Predicted)
+                    'Predicted'= dataframe_overos$Predicted)
 table_overos
 
 ###Creation of probability table
@@ -161,11 +166,11 @@ rpart.plot(model)
 predict_test = predict(model, valid, type = "class")
 
 df2 = data.frame("Actual" = valid$output,
-                "Predicted" = predict_test)
+                 "Predicted" = predict_test)
 View(df2)
 
 tb2 = table("Actual" = df2$Actual,
-           "Predicted" = df2$Predicted)
+            "Predicted" = df2$Predicted)
 tb2
 
 prob2 = round(prop.table(tb2) * 100, 2)
@@ -190,7 +195,7 @@ under_class_df = data.frame("Actual" = valid$output,
 View(predict_classunder)
 
 tb_class_under = table("Actual" = under_class_df$Actual,
-                 "Predicted" = under_class_df$Predicted)
+                       "Predicted" = under_class_df$Predicted)
 tb_class_under
 
 prob_class_under = round(prop.table(tb_class_under) * 100, 2)
@@ -204,18 +209,18 @@ confusion_matrix
 
 ### Classification Oversample
 
-modelos = rpart(output~., data = oversampling, method = 'class')
+modelos = rpart(output~., data = oversamplingos, method = 'class')
 
 rpart.plot(modelos)
 
 predict_testos = predict(modelos, valid, type = "class")
 
 dfos = data.frame("Actual" = valid$output,
-                 "Predicted" = predict_testos)
+                  "Predicted" = predict_testos)
 View(dfos)
 
 tbos = table("Actual" = df2$Actual,
-            "Predicted" = df2$Predicted)
+             "Predicted" = df2$Predicted)
 tbos
 
 probos = round(prop.table(tb2) * 100, 2)
@@ -244,11 +249,11 @@ confusionMatrix(predict_rf_under, undersampling$output)
 
 ### Random Forest Oversample
 
-rfos = randomForest(output~., data = oversampling, proximity=TRUE) 
+rfos = randomForest(output~., data = oversamplingos, proximity=TRUE) 
 print(rfos)
 
-p1os = predict(rfos, oversampling)
-confusionMatrix(p1os, oversampling$output)
+p1os = predict(rfos, oversamplingos)
+confusionMatrix(p1os, oversamplingos$output)
 
 # Clustering
 d_dist = daisy(scaled_df, metric = "gower")
@@ -274,7 +279,7 @@ cluster = cutree(hc_undersampled, k= 8)
 ### Clustering Oversample
 
 ### hierarchical clustering
-d_distos = daisy(oversamplingos, metric = "oversampling")
+d_distos = daisy(oversamplingos, metric = "gower")
 
 hcos = hclust(d_distos, method = "complete")
 
@@ -313,11 +318,11 @@ View(pre3)
 LogisticResponse2 = ifelse(pre3 >= 0.5, '1','0')
 
 df3 = data.frame("Actual" = valid2$output,
-                "Predicted" = LogisticResponse2)
+                 "Predicted" = LogisticResponse2)
 View(df3)
 
 tb3 = table("Actual" = df3$Actual,
-           "Predicted" = df3$Predicted)
+            "Predicted" = df3$Predicted)
 tb3
 
 prob3 = round(prop.table(tb3) * 100, 2)
@@ -342,13 +347,13 @@ predict_under_response_pca<-ifelse(predict_under>=0.5, '1','0')
 
 ##Dataframe
 dataframe_under_pca<- data.frame('Actual'=valid2$output,
-                             'Predicted'= predict_under_response_pca)
+                                 'Predicted'= predict_under_response_pca)
 
 View(dataframe_under_pca)
 
 ##Creation of confusion matrix
 table_under_pca<-table('Actual'=dataframe_under_pca$Actual,
-                   'Predicted'= dataframe_under_pca$Predicted)
+                       'Predicted'= dataframe_under_pca$Predicted)
 table_under_pca
 
 ##Creation of probability table
@@ -362,17 +367,17 @@ acc_under_pca
 mylogit2os_pca <- glm(output~., data = oversamplingos_pca, family = binomial)
 summary(mylogit2os)
 
-pre3os_pca = predict(mylogit2, newdata = valid2, type = 'response')
+pre3os_pca = predict(mylogit2os_pca, newdata = valid2, type = 'response')
 View(pre3os_pca)
 
 LogisticResponse2os_pca = ifelse(pre3os_pca >= 0.5, '1','0')
 
 df3os_pca = data.frame("Actual" = valid2$output,
-                 "Predicted" = LogisticResponse2os_pca)
+                       "Predicted" = LogisticResponse2os_pca)
 View(df3os_pca)
 
 tb3os_pca= table("Actual" = df3os_pca$Actual,
-            "Predicted" = df3os_pca$Predicted)
+                 "Predicted" = df3os_pca$Predicted)
 tb3os_pca
 
 prob3os_pca = round(prop.table(tb3os_pca) * 100, 2)
@@ -417,11 +422,11 @@ rpart.plot(modunder_pca)
 predict_classunder_pca = predict(modunder_pca, valid2, type = "class")
 ## Dataframe 
 under_class_df_pca = data.frame("Actual" = valid2$output,
-                            "Predicted" = predict_classunder_pca)
+                                "Predicted" = predict_classunder_pca)
 View(predict_classunder_pca)
 
 tb_class_pca = table("Actual" = under_class_df_pca$Actual,
-                 "Predicted" = under_class_df_pca$Predicted)
+                     "Predicted" = under_class_df_pca$Predicted)
 tb_class_pca
 
 prob_class_under_pca = round(prop.table(tb_class_pca) * 100, 2)
@@ -435,18 +440,18 @@ confusion_matrix
 
 ### Classification PCA - Oversample 
 
-odel2os_pca = rpart(output~., data = oversamplingos_pca, method = 'class')
+model2os_pca = rpart(output~., data = oversamplingos_pca, method = 'class')
 
 rpart.plot(model2os_pca)
 
 predict_test2os_pca = predict(model, valid2, type = "class")
 
 df4os_pca = data.frame("Actual" = valid2$output,
-                 "Predicted" = predict_test2os_pca)
+                       "Predicted" = predict_test2os_pca)
 View(df4os_pca)
 
 tb4os_pca = table("Actual" = df4os_pca$Actual,
-            "Predicted" = df4os_pca$Predicted)
+                  "Predicted" = df4os_pca$Predicted)
 tb4os_pca
 
 prob4os_pca = round(prop.table(tb4os_pca) * 100, 2)
